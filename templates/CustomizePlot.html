@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+
+   <script type="text/javascript">
+        var map_var = {{reserves_map | safe}};
+        var config = {displayModeBar: false};
+        var map = document.getElementById('map'),
+        Plotly.setPlotConfig(config);
+        Plotly.plot("map",map_var);
+        map.on('plotly_click', function(data){
+            update_graph(data.points[0].location);
+        });
+    </script>
+</html>

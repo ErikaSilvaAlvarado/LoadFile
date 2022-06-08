@@ -12,6 +12,9 @@ import plotly.graph_objects as go
 from scipy import signal
 from scipy.signal import argrelextrema
 from scipy.fft import fft, ifft, fftfreq
+import cufflinks as cf
+from IPython.display import display,HTML
+
 #import pywt
 
 #Define units
@@ -262,7 +265,7 @@ def PlotParamListsInt(x,y,param):
             mode="lines",
             line_color=colorLegend[i],
             ))
-    fig1.show()
+    #fig1.show()
     return
 
 

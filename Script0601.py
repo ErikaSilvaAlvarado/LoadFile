@@ -12,8 +12,13 @@ import csv
 import MyFunctions as fu
 import json
 import plotly
+pd.options.plotting.backend = "plotly"
 import plotly.express as px
-
+#de https://nbviewer.org/gist/santosjorge/aba934a0d20023a136c2
+import cufflinks as cf
+from IPython.display import display,HTML
+#making all charts public and setting a global theme
+cf.set_config_file(sharing='public',theme='white',offline=True)
 
 # instancia del objeto Flask
 app = Flask(__name__)
@@ -44,7 +49,12 @@ def uploader():
         df = fu.CreateDataFrame(filepath, dfParam)
         fig = fu.PlotParamInt(df)
         graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template('generalPlot.html', graphJSON=graphJSON)
+        """
+        with open(graphJSON, 'r') as fp:
+            jdata = json.load(fp)
+            print(type(jdata))
+        """
+        return render_template('generalPlot.html', graphJSON=graphJSON)
 
 if __name__ == '__main__':
  # Iniciamos la aplicación

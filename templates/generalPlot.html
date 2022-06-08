@@ -4,11 +4,26 @@
  <body>
   <h1>Signals </h1>
    <div id='chart' class='chart'></div>
+
+  <div id="MathJax_Message" style="display: none;"></div>
+  <div id="js-edit-link" class "embed__edit-link" style="display: block;">
+        <a href="https://chart-studio.plotly.com/create/?fid=ec.silvaalvarado:3295" target="_blank"> Edit chart</a>
+  </div>
+
  </body>
-<!--comment-->
+
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 <script type='text/javascript'>
   var graphs = {{graphJSON | safe}};
   Plotly.plot('chart',graphs,{});
 </script>
+
+ <script type="text/javascript">
+        var map = document.getElementById('chart'),
+        map.on('plotly_click', function(data){
+            update_graph(data);
+        });
+ </script>
+  <!--comment
+ -->
 </html>
