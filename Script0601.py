@@ -44,7 +44,7 @@ def uploader():
         df = fu.CreateDataFrame(filepath, dfParam)
         fig = fu.PlotParamInt(df)
         graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template('index.html', graphJSON=graphJSON)
+    return render_template('generalPlot.html', graphJSON=graphJSON)
 
 if __name__ == '__main__':
  # Iniciamos la aplicación

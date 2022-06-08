@@ -236,7 +236,8 @@ def PlotParamInt(df):
             mode="lines",
             line_color=colorLegend[i],
             ))
-    fig1.show()
+    fig1.update_layout(height=800, width=1800)
+    #fig1.show() descomentar lo uestra en una nueva pestaña
     return fig1
 
 def PlotParamListsInt(x,y,param):
