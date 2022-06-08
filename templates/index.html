@@ -1,0 +1,19 @@
+
+<!DOCTYPE html>
+<html>
+ <head> <title>Load file </title> </head>
+ <body>
+  <h1>Upload your CSV files</h1>
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+    <p><input type="file" name="archivo" multiple></p>
+    <p><input type="submit" value="Submit"></p>
+ </form>
+   <div id='chart' class='chart'”></div>
+ </body>
+<!--comment-->
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script type='text/javascript'>
+  var graphs = {{graphJSON | safe}};
+  Plotly.plot('chart',graphs,{});
+</script>
+</html>
