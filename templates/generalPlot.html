@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
- <head> <title>LoadedFiles </title> </head>
+ <head>
+  <meta name="viewport" content="initial-scale=1, width=device-width">
+  <title>LoadedFiles </title> </head>
  <body>
   <h1>Signals </h1>
    <div id='chart' class='chart'></div>
@@ -11,8 +13,11 @@
   </div>
 
  </body>
+   <!--comment
+ <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
+ -->
 
-<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+ <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 <script type='text/javascript'>
   var graphs = {{graphJSON | safe}};
   Plotly.plot('chart',graphs,{});
