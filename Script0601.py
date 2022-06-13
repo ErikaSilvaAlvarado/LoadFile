@@ -1,6 +1,7 @@
 # Importamos todo lo necesario
 import os
-from flask import Flask, render_template, request, redirect
+import jinja2
+from flask import Flask, render_template, request, redirect, url_for
 #from app import app
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
@@ -14,11 +15,6 @@ import json
 import plotly
 pd.options.plotting.backend = "plotly"
 import plotly.express as px
-#de https://nbviewer.org/gist/santosjorge/aba934a0d20023a136c2
-import cufflinks as cf
-from IPython.display import display,HTML
-#making all charts public and setting a global theme
-cf.set_config_file(sharing='public',theme='white',offline=True)
 
 # instancia del objeto Flask
 app = Flask(__name__)
@@ -27,8 +23,9 @@ app.config['UPLOAD_FOLDER'] = 'Uploads'
 
 @app.route("/")
 def upload_file():
- # renderiamos la plantilla "index.html"
- return render_template('index.html')
+    # renderiamos la plantilla "index.html"
+    return render_template('index.html')
+    #return render_template('index.html')
 
 @app.route("/upload", methods=['GET','POST'])
 def uploader():
@@ -47,15 +44,20 @@ def uploader():
         yEDFA = dfEDFA["yEDFA"].tolist()
         yASE = fu.DownSample(yEDFA, 5)
         df = fu.CreateDataFrame(filepath, dfParam)
+        dataJSON = json.dumps(df, cls=plotly.utils.PlotlyJSONEncoder)
         fig = fu.PlotParamInt(df)
+        #graphJSONaux = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
         graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-        """
-        with open(graphJSON, 'r') as fp:
-            jdata = json.load(fp)
-            print(type(jdata))
-        """
-        return render_template('generalPlot.html', graphJSON=graphJSON)
+        return render_template('generalPlot.html', graphJSON=graphJSON, dataJSON=dataJSON)
+
+
+@app.route('/callback', methods=['POST', 'GET'])
+def cb():
+    return CustomPlot(request.args.get('data'))
+
+def CustomPlot()
 
 if __name__ == '__main__':
  # Iniciamos la aplicación
  app.run(debug=True)
+

@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html>
  <head>
+  <title>LoadedFiles </title>
   <meta name="viewport" content="initial-scale=1, width=device-width">
-  <title>LoadedFiles </title> </head>
+  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+        function cb(selection) {
+            var graphDiv = document.getElementById('chart')
+            $.getJSON({
+                url: "/callback", data: { 'data': selection }, success: function (result) {
+                    Plotly.downloadImage(graphDiv, {format: 'png', width: 800, height: 600, filename: 'newplot'});
+                }
+            });
+        }
+  </script>
+
+ </head>
+
  <body>
-  <h1>Signals </h1>
-   <div id='chart' class='chart'></div>
+  <h1>Customize Signals </h1>
+  <h2>Choose your value:</h2>
+  <input type="text" id="varControl" name="varControl" label=varControl onchange="cb(this.value)">
+  <div id="chart" class="chart"></div>
+  </body>
 
-  <div id="MathJax_Message" style="display: none;"></div>
-  <div id="js-edit-link" class "embed__edit-link" style="display: block;">
-        <a href="https://chart-studio.plotly.com/create/?fid=ec.silvaalvarado:3295" target="_blank"> Edit chart</a>
-  </div>
-
- </body>
-   <!--comment
- <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
- -->
-
- <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-<script type='text/javascript'>
-  var graphs = {{graphJSON | safe}};
-  Plotly.plot('chart',graphs,{});
-</script>
-
- <script type="text/javascript">
-        var map = document.getElementById('chart'),
-        map.on('plotly_click', function(data){
-            update_graph(data);
-        });
+ <script>
+    var graphs = {{graphJSON | safe}};
+    Plotly.plot('chart',graphs,{});
  </script>
-  <!--comment
- -->
+
 </html>

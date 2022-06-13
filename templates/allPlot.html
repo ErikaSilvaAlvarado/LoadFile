@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta name="viewport" content="initial-scale=1, width=device-width">
+  <title>LoadedFiles </title> </head>
+ <body>
+  <h1>Signals </h1>
+  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+  <script type='text/javascript'>
+    <div id='chart' class='chart'></div>
+
+    <div id="MathJax_Message" style="display: none;"></div>
+    <div id="js-edit-link" class "embed__edit-link" style="display: block;">
+        <a href="https://chart-studio.plotly.com/create/?fid=ec.silvaalvarado:3295" target="_blank"> Edit chart</a>
+    </div>
+  </script>
+
+  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+  <script type='text/javascript'>
+  var graphs = {{graphJSON2 | safe}};
+  Plotly.plot('chart',graphs,{});
+  </script>
+</body>
+
+   <!-- Function to update line plot-->
+    <script>
+            function update_graph(selection) {
+                $.getJSON({
+                    url: "/callback", data: { 'data': selection }, success: function (result) {
+                        Plotly.newPlot('chart', result, {});;
+                    }
+                });
+            }
+    </script>
+
+    <script type="text/javascript">
+        var map = document.getElementById('chart'),
+        map.on('plotly_click', function(data){
+           var dataRetrievedLater = graphJSON.data;
+           var layoutRetrievedLater = graphJSON.layout;
+           update_graph(data);
+        });
+    </script>
+
+
+   <script type="text/javascript">
+        var config = {displayModeBar: false};
+        var map = document.getElementById('chart'),
+        Plotly.setPlotConfig(config);
+        map.on('plotly_click', function(data){
+            update_graph(data);
+        });
+   </script>
+
+   <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+   <script type='text/javascript'>
+    var graphs = {{graphJSON | safe}};
+    Plotly.plot('chart',graphs,{});
+   </script>
+
+
+</html>
