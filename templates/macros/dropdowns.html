@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% macro dropdown(name, data, selected = [], extra = '') -%}
+<select name="{{ name }}" {{ extra|safe }}>
+    {%- for ind, val in data %}
+    <option value="{{ ind }}" {% if ind in selected %}selected="selected"{% endif %}>{{ val }}</option>
+    {%- endfor %}
+</select>
+{%- endmacro %}
+</body>
+</html>

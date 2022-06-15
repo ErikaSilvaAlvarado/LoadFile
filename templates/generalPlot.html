@@ -5,29 +5,45 @@
   <meta name="viewport" content="initial-scale=1, width=device-width">
   <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script>
+    <script>
         function cb(selection) {
-            var graphDiv = document.getElementById('chart')
             $.getJSON({
-                url: "/callback", data: { 'data': selection }, success: function (result) {
-                    Plotly.downloadImage(graphDiv, {format: 'png', width: 800, height: 600, filename: 'newplot'});
+                url: "/upload", data: { 'selectValues': selection }, success: function (result) {
+                    Plotly.newPlot('chart', result, {staticPlot: true});;
                 }
             });
         }
-  </script>
-
+    </script>
  </head>
 
  <body>
-  <h1>Customize Signals </h1>
-  <h2>Choose your value:</h2>
-  <input type="text" id="varControl" name="varControl" label=varControl onchange="cb(this.value)">
-  <div id="chart" class="chart"></div>
-  </body>
+    <h1>All Signals</h1>
 
- <script>
-    var graphs = {{graphJSON | safe}};
-    Plotly.plot('chart',graphs,{});
- </script>
+<form method="POST" action="/callback">
+    <label for="selectValues">Choose signal(s):</label>
+    <select name='selectValues' id="selectValues" multiple>
+    </select>
+      <script>
+        var select = document.getElementById("selectValues");
+        var options = {{paramStr|safe}};
+        for(var i = 0; i < options.length; i++) {
+            var opt = options[i];
+            var el = document.createElement("option");
+            el.textContent = opt;
+            el.value = opt;
+            select.appendChild(el);
+        }
+    </script>
+    <p><input type="submit" value="Refresh"></p>
+</form>
+
+    <div id="chart" class="chart" ></div>
+
+ </body>
+
+<script>
+        var graphs = {{graphJSON | safe}};
+        Plotly.newPlot('chart',graphs,{});
+    </script>
 
 </html>

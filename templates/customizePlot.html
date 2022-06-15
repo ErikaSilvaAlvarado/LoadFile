@@ -7,10 +7,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-<h1>Signals </h1>
-   <div id='chart' class='chart'>
-
-   </div>
+<h1>Printed Signals </h1>
+   <div id='chart' class='chart'>  </div>
 
 </body>
         <script type='text/javascript'>
@@ -18,34 +16,6 @@
             Plotly.plot('chart',graphs,{});
         </script>
 
-
-   <script type="text/javascript">
-        var config = {displayModeBar: false};
-        var map = document.getElementById('chart'),
-        Plotly.setPlotConfig(config);
-        map.on('plotly_click', function(data){
-            update_graph(data);
-        });
-    </script>
-   <!-- Function to update line plot-->
-        <script>
-            function update_graph(selection) {
-                $.getJSON({
-                    url: "/callback", data: { 'data': selection }, success: function (result) {
-                        Plotly.newPlot('chart', result, {});;
-                    }
-                });
-            }
-        </script>
-
-    <script type="text/javascript">
-        var map = document.getElementById('chart'),
-        map.on('plotly_click', function(data){
-           var dataRetrievedLater = graphJSON.data;
-           var layoutRetrievedLater = graphJSON.layout;
-           update_graph(data);
-        });
-    </script>
 
 
 </html>

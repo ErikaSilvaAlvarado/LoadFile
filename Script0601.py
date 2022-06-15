@@ -55,8 +55,6 @@ def uploader():
 def cb():
     return CustomPlot(request.args.get('data'))
 
-def CustomPlot()
-
 if __name__ == '__main__':
  # Iniciamos la aplicación
  app.run(debug=True)

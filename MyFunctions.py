@@ -7,6 +7,7 @@ import numpy as np
 from os import listdir
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from scipy import signal
 from scipy.signal import argrelextrema
 from scipy.fft import fft, ifft, fftfreq
@@ -105,7 +106,7 @@ def ReadFolderStability(fileInit, xRange, yRange, param):
         L.append(len(xi))
     return [x,y,L]
 
-def TxDataFrame(filepath,dfEDFA, dfParam):
+def CreateTxDataFrame(filepath,dfEDFA, dfParam):
     xEDFA = dfEDFA["xEDFA"].tolist()
     yEDFA = dfEDFA["yEDFA"].tolist()
     xASE = DownSample(xEDFA, 5)
@@ -309,6 +310,16 @@ def SelectingList(list, indexSel):
         k = indexSel[i]
         listSel.append(list[k])
     return listSel
+
+def RefreshDataFrame(df,xRange, paramStr):
+    NOF = len(paramStr)
+    x = df[(df['Wavelength'] >= xRange[0]) & (df['Wavelength'] <= xRange[1])]['Wavelength'].tolist()
+    df1 = pd.DataFrame()
+    df1['Wavelength'] = x
+    for i in range(NOF):
+        yi = df[(df['Wavelength'] >= xRange[0]) & (df['Wavelength'] <= xRange[1])][paramStr[i]].tolist()
+        df1[paramStr[i]] = yi
+    return df1
 
 
 def SelectDataFrame(df,xRange, paramSel):
