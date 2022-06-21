@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CUSTOM PLOT</title>
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<h1>Printed Signals </h1>
+   <div id='chart' class='chart'>  </div>
+<div>
+    <figure>
+        <img src= {{nameFig}} alt="Trulli" style="width:100%">
+        <figcaption> "Descargar </figcaption>
+        </figure>
+</div>
+</body>
+  <script>
+      Plotly.newPlot('chart',{{dataJSON|safe}},{{layoutJSON|safe}});
+
+</script>
+<script type='text/javascript'>
+    var myPlot = document.getElementById('chart')
+    myPlot.on('plotly_click', function(data){
+    var pts = '';
+    for(var i=0; i < data.points.length; i++){
+        annotate_text = 'x = '+data.points[i].x +
+                      'y = '+data.points[i].y.toPrecision(4);
+
+        annotation = {
+          text: annotate_text,
+          x: data.points[i].x,
+          y: parseFloat(data.points[i].y.toPrecision(4))
+        }
+
+        annotations = self.layout.annotations || [];
+        annotations.push(annotation);
+        Plotly.relayout('chart',{annotations: annotations})
+    }
+});
+</script>
+
+</html>

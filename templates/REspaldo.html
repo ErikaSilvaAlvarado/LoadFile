@@ -5,11 +5,20 @@
     <meta name="viewport" content="initial-scale=1, width=device-width">
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+            function cb(selection) {
+                $.getJSON({
+                    url: '/callback', data: { 'data': selection }, success: function (result) {
+                        Plotly.newPlot('chart', result, {staticPlot: true});;
+                    }
+                });
+            }
+    </script>
  </head>
 
  <body>
     <h1>All Signals</h1>
-   <form name="form1" action="/callback" method="POST" >
+   <form name="form1" action="/callback" method="POST" onsubmit="">
         <input type="text" id='xmin' name="xmin"><br>
         <input type="text" id='xmax' name="xmax"><br>
        <input type="text" id='dx' name="dx"><br>
@@ -41,32 +50,15 @@
 
  </body>
 
- <script type='text/javascript'>
-      var myPlot = document.getElementById('chart');
-        data={{dataJSON|safe}}
-        layout={{layoutJSON|safe}}
-        Plotly.newPlot('chart',data,layout);
-        myPlot.on('plotly_click', function(data){
-             var pts = '';
-             for(var i=0; i < data.points.length; i++){
-                annotate_text = 'x = '+data.points[i].x +
-                      'y = '+data.points[i].y.toPrecision(4);
+ <script>
+      TESTER = document.getElementById('chart');
+      Plotly.newPlot('chart',{{dataJSON|safe}},{{layoutJSON|safe}});
 
-                annotation = {
-                    text: annotate_text,
-                    x: data.points[i].x,
-                    y: parseFloat(data.points[i].y.toPrecision(4))
-                }
-
-            annotations = self.layout.annotations || [];
-            annotations.push(annotation);
-            Plotly.relayout('chart',{annotations: annotations})
-            }
-        });
 </script>
 
 <script type='text/javascript'>
-
-</script>
+            var graphs = {{graphJSON | safe}};
+            Plotly.newPlot('chart',graphs,{});
+        </script>
 
 </html>

@@ -5,12 +5,15 @@ import math
 import pandas as pd
 import numpy as np
 from os import listdir
+import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from scipy import signal
 from scipy.signal import argrelextrema
 from scipy.fft import fft, ifft, fftfreq
+import json
+import plotly
 #import pywt
 
 #Define units
@@ -219,6 +222,154 @@ def List2dfXY(x,y,L,param):
                 df[str(param[i])] = y[i]
     return df
 
+def CreateDataPlot(df):
+    dataList = []
+    col_names = df.columns.values[1:]
+    paramStr = col_names.tolist()
+    NOF = len(paramStr)
+    for i in range(NOF):
+        dataList.append({"x": df["Wavelength"].tolist(), "y": df[paramStr[i]].tolist(), "name": paramStr[i]})
+    return dataList
+
+def PlotParamIntLgd(df,showLgd):
+    col_names = df.columns.values[1:]
+    paramStr = col_names.tolist()
+    NOF = len(paramStr)
+    colorLegend =[ ' black', ' blue', ' blueviolet', ' brown', ' cadetblue', ' chocolate', ' coral',
+                    ' cornflowerblue', ' crimson', ' darkblue', ' darkcyan', ' darkmagenta', ' darkorange', ' darkred',
+                    ' darkseagreen', ' darkslategray', ' darkviolet', ' deeppink', ' deepskyblue', ' dodgerblue',
+                    ' firebrick', ' forestgreen', ' fuchsia', ' gold', ' goldenrod', ' green', ' hotpink', ' indianred',
+                    ' indigo', ' orangered', ' purple', ' rebeccapurple', ' red', ' saddlebrown', ' salmon',
+                    ' seagreen', ' sienna', ' slateblue', ' steelblue', ' violet', ' yellowgreen', 'aqua', 'aquamarine',
+                    'darkgoldenrod', 'darkorchid', 'darkslateblue', 'darkturquoise', 'greenyellow', 'navy',
+                    'palevioletred', 'royalblue', 'sandybrown']
+
+    A = df["Wavelength"].tolist()
+    fig1 = make_subplots()
+    for i in range(NOF):
+        B = df[paramStr[i]]
+        fig1.add_trace(go.Scatter(
+            x=A,
+            y=B,
+            legendgroup ='lgd'+str(i),
+            name=paramStr[i],
+            mode="lines",
+            line_color=colorLegend[i],
+            showlegend=showLgd,
+            ))
+    fig1.update_layout(hovermode='closest')
+    fig1.update_xaxes(showgrid=False, title_font=dict(size=16, family='Helvetica'))
+    fig1.update_yaxes(showgrid=False, title_font=dict(size=16, family='Helvetica'))
+    fig1.update_layout(xaxis=dict(title="Wavelength (nm)", linecolor="black", zeroline=False),
+                      yaxis=dict(title="Transmission (dBm)", linecolor="black",zeroline=False))
+    #fig1.update_layout(plot_bgcolor="white", xaxis=dict(title="Wavelength (nm)", linecolor="black"),
+    #                   yaxis=dict(title="Transmission (dBm)", linecolor="black"))
+    #fig1.show()
+    return fig1
+
+def PlotTxParam(df1, varControl, dx, direction):
+    col_names = df1.columns.values[1:]
+    paramStr = col_names.tolist()
+    NOF = len(paramStr)
+    xmin = int(df1["Wavelength"].min())
+    xmax = int(df1["Wavelength"].max())
+    minYi = df1[paramStr].min()
+    kmin = df1[paramStr].idxmin()
+    fig, ax = plt.subplots()
+    #fig = plt.figure()
+    #ax = fig.add_subplot(111)
+    for i in range(NOF):
+        # ax.plot(df1["Wavelength"], df1[paramStr[i]], color=colorLegend[i], linestyle=lineStyle[i % Ls], linewidth=0.8)
+        m = 4
+        ax.plot(df1["Wavelength"], df1[paramStr[i]], color=colorLegend[i], linestyle=LineStyleChange(i, m, Ls),
+                linewidth=0.8)
+        if paramStr[i]=='0.0':
+            paramStr[i] == '0'
+    lgd = plt.legend(paramStr, fontsize=6,
+                     title=SelecTextVarControl(varControl),
+                     title_fontsize=6,
+                     bbox_to_anchor=(0, 1),
+                     # loc='upper right',
+                     loc='upper left',
+                     fancybox=False)
+    # SEt xlim,ylim
+    ymin = min(minYi)
+    ymax = 0
+
+    # Arrow indicating the tunning direction
+    xOrigin = (xmin + xmax) / 2
+    # xOrigin = 1554
+    """
+    if kmin[2] > kmin[3]:
+        xEnd = xOrigin + 1.5
+    else:
+        xEnd = xOrigin - 1.5
+    
+    xEnd = xOrigin + 1.5 #ojo sta fija
+   
+    yOrigin = -16
+    
+    yOrigin = -16
+    ax.annotate('', xy=(xOrigin, yOrigin), xycoords='data',
+                xytext=(xEnd, yOrigin), textcoords='data',
+                arrowprops=dict(arrowstyle="->",
+                                ec="k",
+                                shrinkA=0, shrinkB=0))
+    #dx = int(np.round((xmax-xmin)/5,1))
+    ax.text(1554.5, -15, "P", color=colorLegend[m])
+    """
+    fig, ax = SettingAxis(fig, ax, [xmin, xmax], [ymin, ymax], dx, 'Tx')
+    # Save figure
+    nameFig= 'Tx' + varControl + direction + '.png'
+    plt.savefig(nameFig, dpi=300, transparent=True, bbox_inches='tight',
+                bbox_extra_artists=(lgd,))
+    return nameFig
+
+def SettingAxis(fig, ax, xRange, yRange, dx, typeSignal):
+        if typeSignal == 'Tx':
+            xLabel = 'Wavelength (nm)'
+            yLabel = 'Transmission (dB)'
+        elif typeSignal == 'Pout':
+            xLabel = 'Wavelength (nm)'
+            yLabel = 'Output power (dBm)'
+        elif typeSignal == 'FFT':
+            xLabel = 'Spatial frequency (1/nm)'
+            yLabel = 'Magnitude (p.u)'
+        elif typeSignal == 'Lin':
+            xLabel = ''
+            yLabel = 'Wavelength (nm)'
+        elif typeSignal == 'PoutStab':
+            xLabel = 'Time(s)'
+            yLabel = 'Output power (dBm)'
+        elif typeSignal == 'lambdaStab':
+            xLabel = 'Time(s)'
+            yLabel = 'Wavelength (nm)'
+            ax.yaxis.set_major_formatter(plt.FormatStrFormatter('%.2f'))
+        else:
+            xLabel = 'x'
+            yLabel = 'y'
+        if dx!='':
+            ax.set_xticks(list(range(xRange[0], xRange[1] + 1, dx)))
+        # ax.set_xticks(list(range(xRange[0], xRange[1]+1, 2))) #para el TEDFL parametrico
+        # ax.set_xticks(list(range(xRange[0], xRange[1] + 1, 50))) #para el MZI vs  C parametrico
+        # ax.set_xticks(list(range(xRange[0], xRange[1] + 1, 2))) #para linealidad por temepratura
+        # ax.set_xticks(list(range(xRange[0], xRange[1] + 1, 100)))  # para linealidad por temepratura
+        # ax.set_xticks(list(range(xRange[0], xRange[1] + 1, 5)))  # para SW Inc
+        # ax.set_xticks(list(range(xRange[0], xRange[1] + 1, 10)))  # para SW Dec
+        # ax.set_xticks(list(range(xRange[0], xRange[1]+1, 4))) #para el TEDFL Temp+SW
+        plt.xticks(fontsize=8)
+        plt.yticks(fontsize=8)
+        ax.set_xlabel(xLabel, fontsize=10)
+        ax.set_ylabel(yLabel, fontsize=10)
+        ax.set_xlim(xRange)
+        ax.set_ylim(yRange)
+        auxWidth = 8.8 * cm
+        auxHeight = 7.5 * cm
+        figure = plt.gcf()
+        figure.set_size_inches(auxWidth, auxHeight)
+        plt.tight_layout()
+        return fig, ax
+
 def PlotParamInt(df):
     col_names = df.columns.values[1:]
     paramStr = col_names.tolist()
@@ -246,6 +397,7 @@ def PlotParamInt(df):
             showlegend=True,
             ))
     fig1.update_layout(height=800, width=1800)
+    #fig1.show()
     return fig1
 
 def PlotParamListsInt(x,y,param):
@@ -275,15 +427,14 @@ def PlotParamListsInt(x,y,param):
 
 
 def Dist2Curv(param):
-    curv = np.empty(len(param),dtype=int)
+    curv = np.empty(len(param),dtype=float)
     L = 0.15 #en metros
     param = np.array(param)
-    p2 = np.power(param*1e-6, 2)    #en m
-    curv = np.around(2 * param/(p2+L*L), 0)
-    curv = curv.astype(np.int)
-    #curv = 2 * param / (p2 + L * L)
-    #curv en 1/m
-    return curv
+    p2 = np.power(param*1e-3, 2)    #llevar d de um a m
+    #curv = (2 * param * 1e-6) / (p2 + L * L)
+    curv = np.around(2 * param*1e-3/(p2+L*L), 3)
+    #
+    return curv #curv en 1/m
 
 def PlotSignalInt(x,y):
     fig = make_subplots(1)
